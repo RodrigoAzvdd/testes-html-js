@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Rosto</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        video {
+            position: absolute;
+            width: 100%;
+            height: auto;
+            max-height: 100vh;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Configurar câmera
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => console.error("Erro ao acessar câmera:", err));
+
+        // Ajustar tamanho do canvas
+        video.addEventListener('loadedmetadata', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            desenharRetangulo();
+        });
+
+        // Desenhar retângulo no rosto
+        function desenharRetangulo() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const largura = canvas.width * 0.5;
+            const altura = largura * 1.2;
+            const x = (canvas.width - largura) / 2;
+            const y = (canvas.height - altura) / 2;
+
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x, y, largura, altura);
+
+            requestAnimationFrame(desenharRetangulo);
+        }
+    </script>
+</body>
+
+</html>
